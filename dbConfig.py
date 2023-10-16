@@ -1,12 +1,14 @@
 import sqlite3
+from flask import g
 
 DATABASE_URI = 'bbdd.sqlite'
 
-try:
-    db=sqlite3.connect("bbdd.sqlite")
-    print("conexion exitosa")
-
-except sqlite3.Error:
-    print("error al conectar a la base de datos")
-
-
+def get_db():
+    db = getattr(g, '_database', None)
+    if db is None:
+        try:
+            db = g._database = sqlite3.connect(DATABASE_URI)
+            print("Conexión exitosa a la base de datos")
+        except sqlite3.Error as e:
+            print(f"Error al conectar a la base de datos: {e}")
+    return db
