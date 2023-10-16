@@ -26,11 +26,9 @@ def get_usuarios():
 @app.route("/recibir_datos", methods=["POST"])
 def recibir_datos():
     if request.method == "POST":
-        # Obtener datos del formulario o del cuerpo JSON de la solicitud
-        user_data = request.json  # Esto asume que los datos se envían en formato JSON
+        user_data = request.json
 
         if user_data:
-            # Puedes procesar los datos y guardarlos en la base de datos
             user_name = user_data.get("user_name")
             user_surname = user_data.get("user_surname")
             user_tel = user_data.get("user_tel")
@@ -38,7 +36,6 @@ def recibir_datos():
             selected_option = user_data.get("select")
             message = user_data.get("message")
 
-            # Insertar los datos en la base de datos
             db = get_db()
             cursor = db.cursor()
             cursor.execute("INSERT INTO usuarios (nombre, apellidos, telefono, email, servicio, mensaje) VALUES (?, ?, ?, ?, ?, ?)",
