@@ -55,7 +55,7 @@ def recibir_datos():
                 return "Datos guardados en la base y correo enviado"
             else:
                 ## En caso de que enviar_correo de errror
-                return "Datos guardados en la base de datos, pero hubo un error al enviar el correo"
+                return jsonify({"error":"Datos guardados en la base de datos, pero hubo un error al enviar el correo"})
         else:
             ## Demas errores posibles
             return jsonify({"error": "No se recibieron datos válidos"}), 400
