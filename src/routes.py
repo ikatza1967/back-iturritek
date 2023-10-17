@@ -22,10 +22,10 @@ def bienvenidos():
     return "Hola"
 
 # Ruta para visualizar la tabla de usuarios
-@app.route("/ver_usuarios")
+@app.route("/ver_solicitudes")
 def get_usuarios():
     cursor = get_db().cursor()
-    cursor.execute("SELECT * FROM usuarios")
+    cursor.execute("SELECT * FROM solicitudes")
     usuarios = cursor.fetchall()
     cursor.close()
     return jsonify(usuarios)
@@ -45,7 +45,7 @@ def recibir_datos():
 
             db = get_db()
             cursor = db.cursor()
-            cursor.execute("INSERT INTO usuarios (nombre, apellidos, telefono, email, servicio, mensaje) VALUES (?, ?, ?, ?, ?, ?)",
+            cursor.execute("INSERT INTO solicitudes (nombre, apellidos, telefono, email, servicio, mensaje) VALUES (?, ?, ?, ?, ?, ?)",
                            (user_name, user_surname, user_tel, user_email, selected_option, message))
             db.commit()
             cursor.close()

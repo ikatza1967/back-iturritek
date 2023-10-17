@@ -14,7 +14,7 @@ def get_db():
 
             # Crea la tabla si no existe
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS usuarios (
+                CREATE TABLE IF NOT EXISTS solicitudes (
                     id INTEGER PRIMARY KEY,
                     nombre TEXT,
                     apellidos TEXT,
