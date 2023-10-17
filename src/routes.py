@@ -25,7 +25,7 @@ def get_usuarios():
     cursor.close()
     return jsonify(usuarios)
 
-# Ruta que recive los usuarios desde el formulario del front
+# Ruta que recive los usuarios desde el formulario del front y los introduce a la bbdd
 @app.route("/recibir_datos", methods=["POST"])
 def recibir_datos():
     if request.method == "POST":
