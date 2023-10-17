@@ -1,6 +1,8 @@
 import sqlite3
 from flask import g
 
+# En este archivo se conecta la bbdd 
+
 DATABASE_URI = 'bbdd.sqlite'
 
 def get_db():

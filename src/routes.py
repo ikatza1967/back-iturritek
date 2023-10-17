@@ -5,6 +5,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
+# Para evitar problemas con la base de datos
 @app.teardown_appcontext
 def close_db(exception):
     db = getattr(g, '_database', None)
@@ -15,7 +16,8 @@ def close_db(exception):
 def bienvenidos():
     return "Hola"
 
-@app.route("/prueba")
+# Ruta para visualizar la tabla de usuarios
+@app.route("/ver_usuarios")
 def get_usuarios():
     cursor = get_db().cursor()
     cursor.execute("SELECT * FROM usuarios")
@@ -23,11 +25,12 @@ def get_usuarios():
     cursor.close()
     return jsonify(usuarios)
 
+# Ruta que recive los usuarios desde el formulario del front
 @app.route("/recibir_datos", methods=["POST"])
 def recibir_datos():
     if request.method == "POST":
         user_data = request.json
-
+        print(user_data)
         if user_data:
             user_name = user_data.get("user_name")
             user_surname = user_data.get("user_surname")
@@ -50,5 +53,3 @@ def recibir_datos():
         return jsonify({"error": "Método no permitido"}), 405
     
 
-if __name__ == "__main__":
-    app.run(debug=True)
