@@ -2,7 +2,7 @@
 from dbConfig import get_db
 
 #Se importa el archivo para el envio de correos
-from correo import *
+import src.correo 
 
 from flask import Flask, jsonify, g, request
 from flask_cors import CORS
@@ -51,7 +51,12 @@ def recibir_datos():
             db.commit()
             cursor.close()
 
-            return "Datos guardados exitosamente en la base de datos"
+            if correo.enviar_correo(user_name, user_surname, user_tel, user_email, selected_option, message):
+
+                return "datos guardados en l base y correo enviado"
+            else:
+                return "datos guardados en la base de datos,pero error al enviar correo"
+
         else:
             return jsonify({"error": "No se recibieron datos válidos"}), 400
     else:
