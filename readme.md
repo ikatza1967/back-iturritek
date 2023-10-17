@@ -14,20 +14,20 @@ Parte del back de la pagina de iturritek.
 
 Opcional: crear el entorno virtual
 
-´´´
+```
 python3 -m venv venv
-´´´
+```
 
 Instalar las dependencias
 
-´´´
+```
 pip install -r requirements.txt
-´´´
+```
 
 Inicia el servidor
 
-´´´
+```
 python3 app.py
-´´´
+```
 
 
