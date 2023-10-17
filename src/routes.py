@@ -1,4 +1,9 @@
+#Se importa la configuracion de la bbdd
 from dbConfig import get_db
+
+#Se importa el archivo para el envio de correos
+from correo import *
+
 from flask import Flask, jsonify, g, request
 from flask_cors import CORS
 
