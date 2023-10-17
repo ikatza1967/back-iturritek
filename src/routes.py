@@ -23,9 +23,18 @@ def bienvenidos():
 
 # Ruta para visualizar la tabla de usuarios
 @app.route("/ver_solicitudes")
-def get_usuarios():
+def get_categorias():
     cursor = get_db().cursor()
     cursor.execute("SELECT * FROM solicitudes")
+    usuarios = cursor.fetchall()
+    cursor.close()
+    return jsonify(usuarios)
+
+# Ruta para visualizar las categorias
+@app.route("/ver_categorias")
+def get_usuarios():
+    cursor = get_db().cursor()
+    cursor.execute("SELECT * FROM categorias")
     usuarios = cursor.fetchall()
     cursor.close()
     return jsonify(usuarios)
@@ -61,3 +70,21 @@ def recibir_datos():
             return jsonify({"error": "No se recibieron datos válidos"}), 400
     else:
         return jsonify({"error": "Método no permitido"}), 405
+    
+# Ruta Para agregar Categorias
+@app.route("/agregar_categoria", methods=['POST'])
+def agregar_categoria():
+    if request.method == 'POST':
+        categoria_data = request.json
+        if categoria_data:
+            nombre_Categoria = categoria_data.get('nombre_Categoria')
+
+            db = get_db()
+            cursor = db.cursor()
+            cursor.execute("INSERT INTO categorias (nombre_Categoria) VALUES (?)", (nombre_Categoria,))
+            db.commit()
+            cursor.close()
+
+            return "categoria creada exitosamente"
+        else:
+            return "error al crear la categoria"

@@ -24,6 +24,22 @@ def get_db():
                     mensaje TEXT
                 )
             ''')
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS categorias (
+                    id_Categoria INTEGER PRIMARY KEY,
+                    nombre_Categoria TEXT
+                )
+            ''')
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS servicios (
+                    id_Servicio INTEGER PRIMARY KEY,
+                    nombre_servicio TEXT,
+                    descripcion_servicio TEXT,
+                    img_servicio TEXT,
+                    categoria_id INTEGER,
+                    FOREIGN KEY (categoria_id) REFERENCES categorias (id_Categoria)
+                )
+            ''')
             db.commit()
             
             print("Conexión exitosa a la base de datos")
