@@ -50,7 +50,7 @@ def recibir_datos():
             db.commit()
             cursor.close()
 
-            if enviar_correo():
+            if enviar_correo(user_name, user_surname, user_tel, user_email, selected_option, message):
                 return "Datos guardados en la base y correo enviado"
             else:
                 return "Datos guardados en la base de datos, pero hubo un error al enviar el correo"
