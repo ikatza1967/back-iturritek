@@ -101,6 +101,7 @@ def agregar_categoria():
         categoria_data = request.json
         if categoria_data:
             nombre_Categoria = categoria_data.get('nombre_Categoria')
+            print(nombre_Categoria)
 
             db = get_db()
             cursor = db.cursor()
