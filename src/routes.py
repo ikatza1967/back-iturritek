@@ -61,7 +61,9 @@ def recibir_datos():
 
             if enviar_correo(user_name, user_surname, user_tel, user_email, selected_option, message):
                 ## En caso de que no haya ningun error
-                return "Datos guardados en la base y correo enviado"
+                if enviar_correo_cliente(user_name, user_email):
+                    return "Todo correcto"
+                return "Datos guardados en la base y correo enviado, pero correo al cliente fallido"
             else:
                 ## En caso de que enviar_correo de errror
                 return jsonify({"error":"Datos guardados en la base de datos, pero hubo un error al enviar el correo"})

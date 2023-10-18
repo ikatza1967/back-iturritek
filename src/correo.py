@@ -34,8 +34,40 @@ def enviar_correo(user_name, user_surname, user_tel, user_email, selected_option
         server.quit()
         return True
     except Exception as e:
-        print(f'Error al enviar el correo: {str(e)}')
+        print(f'Error al enviar el correo a iturritek: {str(e)}')
         return False
+    
+def enviar_correo_cliente(user_name, user_email):
+    smtp_server = 'smtp-mail.outlook.com'
+    smtp_port = 587
+    smtp_user = 'iturritek.correo@hotmail.com'
+    smtp_password = 'correoIturritek'
 
+    subject = 'Confirmacion de recepcion de mensaje'
+    email_body = f'Nuevo formulario enviado con los siguientes datos:\n\n'
+    email_body += f'Estimado  {user_name}\n\n'
+    email_body += f'Le escribimos para confirmar la recepción de su correo electrónico. Apreciamos su contacto y nos pondremos en contacto con usted a la brevedad posible para abordar sus consultas o necesidades\n\n'
+    email_body += f'Gracias por considerarnos como su opción. Esperamos servirle pronto.\n\n'
+    email_body += f'Atentamente Iturritek'
+
+    sender = smtp_user
+    recipients = [user_email]
+
+    msg = MIMEMultipart()
+    msg['From'] = sender
+    msg['To'] = ', '.join(recipients)
+    msg['Subject'] = subject
+    msg.attach(MIMEText(email_body, 'plain'))
+
+    try:
+        server = smtplib.SMTP(smtp_server, smtp_port)
+        server.starttls()
+        server.login(smtp_user, smtp_password)
+        server.sendmail(sender, recipients, msg.as_string())
+        server.quit()
+        return True
+    except Exception as e:
+        print(f'Error al enviar el al usuario: {str(e)}')
+        return False
 
 
