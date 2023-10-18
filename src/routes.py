@@ -23,21 +23,42 @@ def bienvenidos():
 
 # Ruta para visualizar la tabla de usuarios
 @app.route("/ver_solicitudes")
-def get_categorias():
+def get_solicitudes():
     cursor = get_db().cursor()
-    cursor.execute("SELECT * FROM solicitudes")
-    usuarios = cursor.fetchall()
+    cursor.execute('''
+        SELECT solicitudes.id, 
+            solicitudes.nombre, 
+            solicitudes.apellidos, 
+            solicitudes.telefono, 
+            solicitudes.email, 
+            servicios.nombre_servicio AS servicio, 
+            categorias.nombre_Categoria AS categoria, 
+            solicitudes.mensaje
+        FROM solicitudes
+        INNER JOIN servicios ON solicitudes.servicio_Id = servicios.id_Servicio
+        INNER JOIN categorias ON servicios.categoria_Id = categorias.id_Categoria;
+    ''')
+    solicitudes = cursor.fetchall()
     cursor.close()
-    return jsonify(usuarios)
+    return jsonify(solicitudes)
 
 # Ruta para visualizar las categorias
 @app.route("/ver_categorias")
-def get_usuarios():
+def get_categorias():
     cursor = get_db().cursor()
     cursor.execute("SELECT * FROM categorias")
-    usuarios = cursor.fetchall()
+    categorias = cursor.fetchall()
     cursor.close()
-    return jsonify(usuarios)
+    return jsonify(categorias)
+
+# Ruta para visualizar las categorias
+@app.route("/ver_servicios")
+def get_servicios():
+    cursor = get_db().cursor()
+    cursor.execute("SELECT * FROM servicios")
+    servicios = cursor.fetchall()
+    cursor.close()
+    return jsonify(servicios)
 
 # Ruta que recive los usuarios desde el formulario del front y los introduce a la bbdd
 @app.route("/recibir_datos", methods=["POST"])
@@ -54,7 +75,7 @@ def recibir_datos():
 
             db = get_db()
             cursor = db.cursor()
-            cursor.execute("INSERT INTO solicitudes (nombre, apellidos, telefono, email, servicio, mensaje) VALUES (?, ?, ?, ?, ?, ?)",
+            cursor.execute("INSERT INTO solicitudes (nombre, apellidos, telefono, email, servicio_Id, mensaje) VALUES (?, ?, ?, ?, ?, ?)",
                            (user_name, user_surname, user_tel, user_email, selected_option, message))
             db.commit()
             cursor.close()
@@ -90,3 +111,24 @@ def agregar_categoria():
             return "categoria creada exitosamente"
         else:
             return "error al crear la categoria"
+        
+# Ruta Para agregar Servicios
+@app.route("/agregar_servicio", methods=['POST'])
+def agregar_servicio():
+    if request.method == 'POST':
+        servicio_data = request.json
+        if servicio_data:
+            nombre_Servicio = servicio_data.get('nombre_Servicio')
+            descripcion_Servicio = servicio_data.get('descripcion_Servicio')
+            img_Servicio = servicio_data.get('img_Servicio')
+            categoria_Id = servicio_data.get('categoria_Id')
+
+            db = get_db()
+            cursor = db.cursor()
+            cursor.execute("INSERT INTO servicios (nombre_Servicio, descripcion_Servicio, img_Servicio, categoria_Id) VALUES (?, ?, ?, ?)", (nombre_Servicio, descripcion_Servicio, img_Servicio, categoria_Id))
+            db.commit()
+            cursor.close()
+
+            return "servicio creado exitosamente"
+        else:
+            return "error al crear el servicio"

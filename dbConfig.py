@@ -14,29 +14,30 @@ def get_db():
 
             # Crea la tabla si no existe
             cursor.execute('''
-                CREATE TABLE IF NOT EXISTS solicitudes (
-                    id INTEGER PRIMARY KEY,
-                    nombre TEXT,
-                    apellidos TEXT,
-                    telefono TEXT,
-                    email TEXT,
-                    servicio TEXT,
-                    mensaje TEXT
-                )
-            ''')
-            cursor.execute('''
                 CREATE TABLE IF NOT EXISTS categorias (
                     id_Categoria INTEGER PRIMARY KEY,
                     nombre_Categoria TEXT
                 )
             ''')
             cursor.execute('''
+                CREATE TABLE IF NOT EXISTS solicitudes (
+                    id INTEGER PRIMARY KEY,
+                    nombre TEXT,
+                    apellidos TEXT,
+                    telefono TEXT,
+                    email TEXT,
+                    servicio_Id INTEGER,
+                    mensaje TEXT,
+                    FOREIGN KEY (servicio_Id) REFERENCES servicios (id_Servicio)
+                )
+            ''')
+            cursor.execute('''
                 CREATE TABLE IF NOT EXISTS servicios (
                     id_Servicio INTEGER PRIMARY KEY,
-                    nombre_servicio TEXT,
-                    descripcion_servicio TEXT,
-                    img_servicio TEXT,
-                    categoria_id INTEGER,
+                    nombre_Servicio TEXT,
+                    descripcion_Servicio TEXT,
+                    img_Servicio TEXT,
+                    categoria_Id INTEGER,
                     FOREIGN KEY (categoria_id) REFERENCES categorias (id_Categoria)
                 )
             ''')
