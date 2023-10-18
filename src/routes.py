@@ -158,3 +158,28 @@ def eliminar_categoria(id_categoria):
             return jsonify({"error": str(e)})
     else:
         return jsonify({"error": "Método no permitido"}), 405
+
+# Ruta para eliminar un servicio   
+@app.route("/eliminar_servicio/<int:id_Servicio>", methods=["DELETE"])
+def eliminar_servicio(id_Servicio):
+    if request.method == "DELETE":
+        try:
+            db = get_db()
+            cursor = db.cursor()
+            
+            # Verificar si la categoría existe antes de eliminarla
+            cursor.execute("SELECT id_Servicio FROM servicios WHERE id_Servicio = ?", (id_Servicio,))
+            servicio = cursor.fetchone()
+            
+            if servicio is not None:
+                # Eliminar la categoría por su ID
+                cursor.execute("DELETE FROM servicios WHERE id_Servicio = ?", (id_Servicio,))
+                db.commit()
+                cursor.close()
+                return jsonify({"mensaje": "Servicio eliminado correctamente"})
+            else:
+                return jsonify({"error": "El servicio no existe"})
+        except Exception as e:
+            return jsonify({"error": str(e)})
+    else:
+        return jsonify({"error": "Método no permitido"}), 405
