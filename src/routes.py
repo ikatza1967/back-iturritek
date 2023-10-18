@@ -21,7 +21,7 @@ def close_db(exception):
 def bienvenidos():
     return "Hola"
 
-# Ruta para visualizar la tabla de usuarios
+# Ruta para visualizar la tabla de solicitudes
 @app.route("/ver_solicitudes")
 def get_solicitudes():
     cursor = get_db().cursor()
@@ -51,7 +51,7 @@ def get_categorias():
     cursor.close()
     return jsonify(categorias)
 
-# Ruta para visualizar las categorias
+# Ruta para visualizar los servicios
 @app.route("/ver_servicios")
 def get_servicios():
     cursor = get_db().cursor()
@@ -60,7 +60,7 @@ def get_servicios():
     cursor.close()
     return jsonify(servicios)
 
-# Ruta que recive los usuarios desde el formulario del front y los introduce a la bbdd
+# Ruta que recive las solicitudes desde el formulario del front y las introduce a la bbdd
 @app.route("/recibir_datos", methods=["POST"])
 def recibir_datos():
     if request.method == "POST":
@@ -133,3 +133,28 @@ def agregar_servicio():
             return "servicio creado exitosamente"
         else:
             return "error al crear el servicio"
+
+# Ruta para eliminar una categoria   
+@app.route("/eliminar_categoria/<int:id_categoria>", methods=["DELETE"])
+def eliminar_categoria(id_categoria):
+    if request.method == "DELETE":
+        try:
+            db = get_db()
+            cursor = db.cursor()
+            
+            # Verificar si la categoría existe antes de eliminarla
+            cursor.execute("SELECT id_Categoria FROM categorias WHERE id_Categoria = ?", (id_categoria,))
+            categoria = cursor.fetchone()
+            
+            if categoria is not None:
+                # Eliminar la categoría por su ID
+                cursor.execute("DELETE FROM categorias WHERE id_Categoria = ?", (id_categoria,))
+                db.commit()
+                cursor.close()
+                return jsonify({"mensaje": "Categoría eliminada correctamente"})
+            else:
+                return jsonify({"error": "La categoría no existe"})
+        except Exception as e:
+            return jsonify({"error": str(e)})
+    else:
+        return jsonify({"error": "Método no permitido"}), 405
