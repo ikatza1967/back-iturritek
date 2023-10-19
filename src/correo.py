@@ -44,9 +44,8 @@ def enviar_correo_cliente(user_name, user_email):
     smtp_password = 'correoIturritek'
 
     subject = 'Confirmacion de recepcion de mensaje'
-    email_body = f'Nuevo formulario enviado con los siguientes datos:\n\n'
-    email_body += f'Estimado  {user_name}\n\n'
-    email_body += f'Le escribimos para confirmar la recepción de su correo electrónico. Apreciamos su contacto y nos pondremos en contacto con usted a la brevedad posible para abordar sus consultas o necesidades\n\n'
+    email_body = f'Estimado  {user_name}\n\n'
+    email_body += f'Le escribimos para confirmar la recepción de su correo electrónico. Apreciamos su contacto y nos pondremos en contacto con usted a la brevedad posible para abordar sus consultas o necesidades.\n\n'
     email_body += f'Gracias por considerarnos como su opción. Esperamos servirle pronto.\n\n'
     email_body += f'Atentamente Iturritek'
 
