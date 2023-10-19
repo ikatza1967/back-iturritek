@@ -4,7 +4,8 @@ from dbConfig import get_db
 #Se importa el archivo para el envio de correos
 from src.correo import *
 
-from flask import Flask, jsonify, g, request
+from flask import Flask, jsonify, g, request, render_template
+import base64
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -55,10 +56,28 @@ def get_categorias():
 @app.route("/ver_servicios")
 def get_servicios():
     cursor = get_db().cursor()
-    cursor.execute("SELECT * FROM servicios")
+    cursor.execute("SELECT id_Servicio, nombre_Servicio, descripcion_Servicio, categoria_Id, img_Servicio FROM servicios")
     servicios = cursor.fetchall()
     cursor.close()
-    return jsonify(servicios)
+
+    servicios_con_imagen = []
+    for servicio in servicios:
+        id_Servicio, nombre_Servicio, descripcion_Servicio, categoria_Id, imagen_data = servicio
+        # Convertir la imagen en formato base64
+        imagen_base64 = base64.b64encode(imagen_data).decode('utf-8')
+
+        # Crear un diccionario con la información del servicio y la imagen base64
+        servicio_con_imagen = {
+            "id_Servicio": id_Servicio,
+            "nombre_Servicio": nombre_Servicio,
+            "descripcion_Servicio": descripcion_Servicio,
+            "categoria_Id": categoria_Id,
+            "imagen_base64": imagen_base64,
+        }
+
+        servicios_con_imagen.append(servicio_con_imagen)
+
+    return jsonify(servicios_con_imagen)
 
 # Ruta que recive las solicitudes desde el formulario del front y las introduce a la bbdd
 @app.route("/recibir_datos", methods=["POST"])

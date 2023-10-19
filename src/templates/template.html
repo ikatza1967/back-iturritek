@@ -1,0 +1,9 @@
+<div id="imagenesContainer">
+    {% for servicio in servicios %}
+    <p>ID: {{ servicio.id_Servicio }}</p>
+    <p>Nombre: {{ servicio.nombre_Servicio }}</p>
+    <p>Descripción: {{ servicio.descripcion_Servicio }}</p>
+    <img src="data:image/jpeg;base64, {{ servicio.imagen_base64 }}" alt="Imagen del servicio" />
+    <p>Categoría ID: {{ servicio.categoria_Id }}</p>
+    {% endfor %}
+</div>
