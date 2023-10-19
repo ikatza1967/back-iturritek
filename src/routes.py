@@ -126,7 +126,11 @@ def agregar_servicio():
 
             db = get_db()
             cursor = db.cursor()
-            cursor.execute("INSERT INTO servicios (nombre_Servicio, descripcion_Servicio, img_Servicio, categoria_Id) VALUES (?, ?, ?, ?)", (nombre_Servicio, descripcion_Servicio, img_Servicio, categoria_Id))
+
+            with open(img_Servicio, 'rb') as image_file:
+                imagen_data = image_file.read()
+
+            cursor.execute("INSERT INTO servicios (nombre_Servicio, descripcion_Servicio, img_Servicio, categoria_Id) VALUES (?, ?, ?, ?)", (nombre_Servicio, descripcion_Servicio, imagen_data, categoria_Id))
             db.commit()
             cursor.close()
 
