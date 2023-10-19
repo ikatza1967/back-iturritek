@@ -36,7 +36,7 @@ def get_db():
                     id_Servicio INTEGER PRIMARY KEY,
                     nombre_Servicio TEXT,
                     descripcion_Servicio TEXT,
-                    img_Servicio TEXT,
+                    img_Servicio BLOB,
                     categoria_Id INTEGER,
                     FOREIGN KEY (categoria_id) REFERENCES categorias (id_Categoria)
                 )
