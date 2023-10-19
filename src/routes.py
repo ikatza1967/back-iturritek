@@ -4,8 +4,9 @@ from dbConfig import get_db
 #Se importa el archivo para el envio de correos
 from src.correo import *
 
-from flask import Flask, jsonify, g, request, render_template
+from flask import Flask, jsonify, g, request
 import base64
+import os
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -17,6 +18,11 @@ def close_db(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
+
+# Extensiones permitidas para el file de la img
+ALLOWED_EXTENSIONS = {'jpeg',}  
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route("/")
 def bienvenidos():
@@ -136,26 +142,28 @@ def agregar_categoria():
 @app.route("/agregar_servicio", methods=['POST'])
 def agregar_servicio():
     if request.method == 'POST':
-        servicio_data = request.json
-        if servicio_data:
-            nombre_Servicio = servicio_data.get('nombre_Servicio')
-            descripcion_Servicio = servicio_data.get('descripcion_Servicio')
-            img_Servicio = servicio_data.get('img_Servicio')
-            categoria_Id = servicio_data.get('categoria_Id')
+        nombre_Servicio = request.form['nombre_Servicio']
+        descripcion_Servicio = request.form['descripcion_Servicio']
+        categoria_Id = request.form['categoria_Id']
 
+        # Obtener el archivo de imagen desde la solicitud
+        img_Servicio = request.files['img_Servicio']
+        
+        if img_Servicio and allowed_file(img_Servicio.filename):
+            # Procesar el archivo de imagen
+            imagen_data = img_Servicio.read()
+
+            # Realizar la inserción en la base de datos
             db = get_db()
             cursor = db.cursor()
-
-            with open(img_Servicio, 'rb') as image_file:
-                imagen_data = image_file.read()
-
             cursor.execute("INSERT INTO servicios (nombre_Servicio, descripcion_Servicio, img_Servicio, categoria_Id) VALUES (?, ?, ?, ?)", (nombre_Servicio, descripcion_Servicio, imagen_data, categoria_Id))
             db.commit()
             cursor.close()
 
-            return "servicio creado exitosamente"
+            return "Servicio creado exitosamente"
         else:
-            return "error al crear el servicio"
+            return "Error al cargar la imagen o el formato no está permitido"
+    return "Método no permitido"
 
 # Ruta para eliminar una categoria   
 @app.route("/eliminar_categoria/<int:id_categoria>", methods=["DELETE"])
