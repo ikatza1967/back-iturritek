@@ -20,7 +20,7 @@ def close_db(exception):
         db.close()
 
 # Extensiones permitidas para el file de la img
-ALLOWED_EXTENSIONS = {'jpeg',}  
+ALLOWED_EXTENSIONS = {'png',}  
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -62,13 +62,23 @@ def get_categorias():
 @app.route("/ver_servicios")
 def get_servicios():
     cursor = get_db().cursor()
-    cursor.execute("SELECT id_Servicio, nombre_Servicio, descripcion_Servicio, categoria_Id, img_Servicio FROM servicios")
+    cursor.execute('''
+        SELECT 
+            s.id_Servicio, 
+            s.nombre_Servicio, 
+            s.descripcion_Servicio, 
+            s.categoria_Id, 
+            c.nombre_Categoria AS nombre_categoria,
+            s.img_Servicio
+        FROM servicios AS s
+        INNER JOIN categorias AS c ON s.categoria_Id = c.id_Categoria
+    ''')
     servicios = cursor.fetchall()
     cursor.close()
 
     servicios_con_imagen = []
     for servicio in servicios:
-        id_Servicio, nombre_Servicio, descripcion_Servicio, categoria_Id, imagen_data = servicio
+        id_Servicio, nombre_Servicio, descripcion_Servicio, categoria_Id, nombre_categoria, imagen_data = servicio
         # Convertir la imagen en formato base64
         imagen_base64 = base64.b64encode(imagen_data).decode('utf-8')
 
@@ -78,11 +88,43 @@ def get_servicios():
             "nombre_Servicio": nombre_Servicio,
             "descripcion_Servicio": descripcion_Servicio,
             "categoria_Id": categoria_Id,
+            "nombre_categoria": nombre_categoria,
             "imagen_base64": imagen_base64,
         }
 
         servicios_con_imagen.append(servicio_con_imagen)
 
+    return jsonify(servicios_con_imagen)
+
+# Ruta que devuelve solo servicios con cierto id de cagtegoria
+@app.route('/servicioDeCategoria/<int:id_Categoria>')
+def servicioDeCategoria(id_Categoria):
+    cursor = get_db().cursor()
+    cursor.execute('''
+        SELECT id_Servicio, nombre_Servicio, descripcion_Servicio, img_Servicio
+        FROM servicios
+        WHERE categoria_Id = ?
+    ''', (id_Categoria,))
+    
+    servicios = cursor.fetchall()
+    cursor.close()
+    
+    servicios_con_imagen = []
+    for servicio in servicios:
+        id_Servicio, nombre_Servicio, descripcion_Servicio, imagen_data = servicio
+        # Convertir la imagen en formato base64
+        imagen_base64 = base64.b64encode(imagen_data).decode('utf-8')
+        
+        # Crear un diccionario con la información del servicio y la imagen base64
+        servicio_con_imagen = {
+            "id_Servicio": id_Servicio,
+            "nombre_Servicio": nombre_Servicio,
+            "descripcion_Servicio": descripcion_Servicio,
+            "imagen_base64": imagen_base64,
+        }
+        
+        servicios_con_imagen.append(servicio_con_imagen)
+    
     return jsonify(servicios_con_imagen)
 
 # Ruta que recive las solicitudes desde el formulario del front y las introduce a la bbdd
@@ -145,15 +187,11 @@ def agregar_servicio():
         nombre_Servicio = request.form['nombre_Servicio']
         descripcion_Servicio = request.form['descripcion_Servicio']
         categoria_Id = request.form['categoria_Id']
-
-        # Obtener el archivo de imagen desde la solicitud
         img_Servicio = request.files['img_Servicio']
         
         if img_Servicio and allowed_file(img_Servicio.filename):
-            # Procesar el archivo de imagen
             imagen_data = img_Servicio.read()
 
-            # Realizar la inserción en la base de datos
             db = get_db()
             cursor = db.cursor()
             cursor.execute("INSERT INTO servicios (nombre_Servicio, descripcion_Servicio, img_Servicio, categoria_Id) VALUES (?, ?, ?, ?)", (nombre_Servicio, descripcion_Servicio, imagen_data, categoria_Id))
