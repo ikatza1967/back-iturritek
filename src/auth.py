@@ -1,29 +1,33 @@
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from flask import request, jsonify
+from dbConfig import get_db
+import bcrypt
+from flask_jwt_extended import JWTManager
+
+# Configura la extensión Flask-JWT-Extended
+jwt = JWTManager()
 
 # Cuando se llama busca el usuario
 def find_user_by_username(username):
-    # Ejemplos de usuarios
-    users = [
-        {'username': 'usuario1', 'password': 'contraseña1'},
-        {'username': 'usuario2', 'password': 'contraseña2'}
-    ]
-    
-    # Si el usuario coinicde se devuelve respuesta sino no
-    for user in users:
-        if user['username'] == username:
-            return user
-    return None
+    # Conecta a la base de datos
+    db = get_db()
+    cursor = db.cursor()
+
+    # Busca al usuario por su nombre de usuario en la base de datos
+    cursor.execute('SELECT username, password_hash FROM users WHERE username = ?', (username,))
+    user_data = cursor.fetchone()
+
+    if user_data:
+        # Si se encuentra al usuario, devuelve un diccionario con el nombre de usuario y el hash de la contraseña
+        return {'username': user_data[0], 'password_hash': user_data[1]}
+    else:
+        # Si no se encuentra al usuario, devuelve None
+        return None
 
 # Función para verificar la contraseña de un usuario
 def verify_password(user, password):
-    # Una vez la funcion anterior nos devuelve user se comprueba que la contraseña coincida
-    return user['password'] == password
-
-# Configura la extensión Flask-JWT-Extended
-from flask_jwt_extended import JWTManager
-
-jwt = JWTManager()
+    # Verifica si la contraseña proporcionada coincide con el hash de contraseña almacenado en la base de datos
+    return bcrypt.checkpw(password.encode('utf-8'), user['password_hash'])
 
 def initialize_auth(app):
     app.config['JWT_SECRET_KEY'] = 'tu_clave_secreta'

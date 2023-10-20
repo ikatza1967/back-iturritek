@@ -8,6 +8,9 @@ from src.auth import *
 from flask import Flask, jsonify, g, request, render_template
 import base64
 from flask_cors import CORS
+import bcrypt
+from dbConfig import get_db
+
 
 app = Flask(__name__)
 CORS(app)
@@ -279,3 +282,35 @@ def login():
 def intranet():
     current_user = get_jwt_identity()
     return jsonify(message=f'Bienvenido a la intranet, {current_user}!')
+
+# Ruta para crear un usuario con contraeña encriptada
+# @app.route('/crearUsuario', methods=['POST'])
+# def create_user():
+    data = request.get_json()
+    
+    username = data.get('username')
+    password = data.get('password')
+
+    print(username, password)
+    # Genera un salt para el hash de la contraseña
+    salt = bcrypt.gensalt()
+
+    # Hashea la contraseña proporcionada por el usuario
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+
+    # Conecta a la base de datos
+    db = get_db()
+    cursor = db.cursor()
+
+    try:
+        # Inserta el nuevo usuario en la base de datos con la contraseña hasheada
+        cursor.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)', (username, hashed_password))
+        db.commit()
+        
+        # Devuelve una respuesta de éxito con código 200 y un mensaje
+        return jsonify({'message': 'Usuario creado exitosamente'}), 200
+
+    except Exception as e:
+        # En caso de error, muestra información de depuración
+        print("Error al crear el usuario:", e)
+        return jsonify({'error': 'No se pudo crear el usuario'}), 400
