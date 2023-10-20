@@ -262,8 +262,6 @@ def login():
     username = data.get('username')
     password = data.get('password')
 
-    print(f"Intento de inicio de sesión con usuario: {username} y contraseña: {password}")
-
     user = find_user_by_username(username)
 
     if user and verify_password(user, password):
@@ -274,13 +272,8 @@ def login():
     else:
         print("Inicio de sesión fallido. Credenciales inválidas.")
         return jsonify({'message': 'Credenciales inválidas'}), 401
-    
 
-# Ruta para mostrar el formulario de inicio de sesión
-@app.route('/login-page', methods=['GET'])
-def login_form():
-    return render_template('login.html')
-
+# Ruta que pide el token para acceder a la intranet
 @app.route('/intranet', methods=['GET'])
 @jwt_required
 def intranet():
