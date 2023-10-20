@@ -1,16 +1,18 @@
 #Se importa la configuracion de la bbdd
 from dbConfig import get_db
 
-#Se importa el archivo para el envio de correos
+#Se importamos los archivos
 from src.correo import *
+from src.auth import *
 
-from flask import Flask, jsonify, g, request
+from flask import Flask, jsonify, g, request, render_template
 import base64
-import os
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
+initialize_auth(app)
+
 
 # Para evitar problemas con la base de datos
 @app.teardown_appcontext
@@ -252,3 +254,29 @@ def eliminar_servicio(id_Servicio):
             return jsonify({"error": str(e)})
     else:
         return jsonify({"error": "Método no permitido"}), 405
+    
+# Ruta para el inicio de sesión
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+
+    print(f"Intento de inicio de sesión con usuario: {username} y contraseña: {password}")
+
+    user = find_user_by_username(username)
+
+    if user and verify_password(user, password):
+        # Si las credenciales son válidas, crea un token JWT
+        access_token = create_access_token(identity=username)
+        print("Inicio de sesión exitoso. Token JWT generado.")
+        return jsonify(access_token=access_token)
+    else:
+        print("Inicio de sesión fallido. Credenciales inválidas.")
+        return jsonify({'message': 'Credenciales inválidas'}), 401
+    
+
+# Ruta para mostrar el formulario de inicio de sesión
+@app.route('/login-page', methods=['GET'])
+def login_form():
+    return render_template('login.html')

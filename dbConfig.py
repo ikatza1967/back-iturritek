@@ -19,6 +19,7 @@ def get_db():
                     nombre_Categoria TEXT
                 )
             ''')
+            
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS solicitudes (
                     id INTEGER PRIMARY KEY,
@@ -39,6 +40,14 @@ def get_db():
                     img_Servicio BLOB,
                     categoria_Id INTEGER,
                     FOREIGN KEY (categoria_id) REFERENCES categorias (id_Categoria)
+                )
+            ''')
+
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY,
+                    username VARCHAR(255) UNIQUE NOT NULL,
+                    password_hash VARCHAR(255) NOT NULL
                 )
             ''')
             db.commit()
