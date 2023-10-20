@@ -280,3 +280,9 @@ def login():
 @app.route('/login-page', methods=['GET'])
 def login_form():
     return render_template('login.html')
+
+@app.route('/intranet', methods=['GET'])
+@jwt_required
+def intranet():
+    current_user = get_jwt_identity()
+    return jsonify(message=f'Bienvenido a la intranet, {current_user}!')
