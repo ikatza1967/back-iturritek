@@ -5,6 +5,7 @@ from email.mime.multipart import MIMEMultipart
 def enviar_correo(user_name, user_surname, user_tel, user_email, selected_option, message):
     smtp_server = 'smtp-mail.outlook.com'
     smtp_port = 587
+    # Este es el correo que se ocupa de enviar los correos!!!
     smtp_user = 'iturritek.correo@hotmail.com'
     smtp_password = 'correoIturritek'
 
@@ -18,6 +19,7 @@ def enviar_correo(user_name, user_surname, user_tel, user_email, selected_option
     email_body += f'Mensaje: {message}\n'
 
     sender = smtp_user
+    # Este correo se envia a la direccion de la "empresa"
     recipients = ['iturritek.correo@hotmail.com']
 
     msg = MIMEMultipart()

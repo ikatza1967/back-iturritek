@@ -29,5 +29,3 @@ Inicia el servidor
 ```
 python3 app.py
 ```
-
-

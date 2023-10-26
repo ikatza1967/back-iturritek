@@ -1,7 +1,5 @@
-#Se importa la configuracion de la bbdd
+# Importamos los otros archivos
 from dbConfig import get_db
-
-#Se importamos los archivos
 from src.correo import *
 from src.auth import *
 
@@ -9,8 +7,6 @@ from flask import Flask, jsonify, g, request, render_template
 import base64
 from flask_cors import CORS
 import bcrypt
-from dbConfig import get_db
-
 
 app = Flask(__name__)
 CORS(app)
