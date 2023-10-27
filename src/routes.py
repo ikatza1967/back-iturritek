@@ -97,6 +97,35 @@ def get_servicios():
 
     return jsonify(servicios_con_imagen)
 
+@app.route("/servicio_especifico/<int:id_servicio>")
+def servicioEspecifico(id_servicio):
+    cursor = get_db().cursor()
+    cursor.execute('''
+        SELECT id_Servicio, nombre_Servicio, descripcion_Servicio, img_Servicio
+        FROM servicios
+        WHERE id_Servicio = ?
+    ''', (id_servicio,))
+
+    servicio = cursor.fetchone()  # Usar fetchone en lugar de fetchall para obtener un solo registro
+
+    if servicio:
+        # Convierte la columna img_Servicio a una cadena Base64
+        img_base64 = base64.b64encode(servicio[3]).decode('utf-8')
+
+        servicio_dict = {
+            'id_Servicio': servicio[0],
+            'nombre_Servicio': servicio[1],
+            'descripcion_Servicio': servicio[2],
+            'img_Servicio': img_base64  # Usar la cadena Base64 en lugar de bytes
+        }
+
+        cursor.close()
+
+        return jsonify(servicio_dict)
+    else:
+        cursor.close()
+        return jsonify({'error': 'Servicio no encontrado'}), 404
+
 # Ruta que devuelve solo servicios con cierto id de cagtegoria
 @app.route('/servicioDeCategoria/<int:id_Categoria>')
 def servicioDeCategoria(id_Categoria):
